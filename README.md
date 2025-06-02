@@ -1,5 +1,145 @@
+## What is the Gemstone App
+
+The Gemstone App is a web-based app that aims to be a user-friendly platform for enthusiast users to discover and manage gemstones, also known as meaningful stones. Users can explore various gemstone collections, study details about each one, such as name, colour, location, meaning and association, and add new gemstones to the database. Additionally, users may add their favourite gemstones to the database, guaranteeing a personal and large gemstone collection.
+The app will include basic CRUD functionality, allowing users to Create, Read, Update and Delete gemstone data. 
 
 ## Demonstration
+
+## Components
+
+Components are simply reusable code fragments that can help in the maintenance of a cleaner codebase. 
+
+## Navigation Bar Component
+
+Below is the nav-bar.blade.php component:
+
+    <nav>
+      <ul>
+        <li><a href="/gemstones">Home</a></li>
+        <li><a href="/gemstones/create">Add Gemstone</a></li>
+        <li style="float:right"> <a href="/gemstones/about">About</a> </li>
+      </ul>
+    </nav> 
+
+The file was created in the components directory, and we called it nav-bar.blade.php. To make it visible on the browser, we must call it in the base layout layout.blade.php. 
+
+    <body>
+        <x-nav-bar/> <!-- The navigation bar will apear here -->
+        {{ $slot }}
+    </body>
+
+*When creating component, we make the code more organised, making it easier to add, update or remove code without affecting the rest of the application. It also reduces code duplication by following DRY principle.*
+
+## Pagination
+
+Pagination helps users to browse the gemstones with ease.
+To create pagination, we need to add this pagination when we call the Gemstone class in the *index()* method. Something like this:
+
+    function index()
+    {
+        $gemstones = Gemstone::paginate(3); //Items per pagination
+        return view('gemstones.index',['gemstones' => $gemstones]);
+    }
+
+-	Instead of fetching all gemstones, we only fetch three gemstones per pagination. In Laravel, the *paginate()* method is an appropriate way to control pagination. 
+-	Based on the total number of gemstones and the chosen number of gemstones per page, it automatically determines the total number of pages. 
+-	The *gemstones.index* view will display the gemstones and the pagination controls after the paginated *$gemstones* are passed to it. 
+-	The pagination makes a cleaner user interface. 
+
+Next, we must render the pagination links for the gemstones. We do this in the *index.blade.php* using the *@if* directive to perform conditional checks. 
+
+    @if ($gemstones->hasPages())
+        <div class="pagination">
+            <!-- Previous Page Link -->
+            @if ($gemstones->onFirstPage())
+                <a class="disabled"><span>{{ __('Previous') }}</span></a>
+            @else
+                <!-- If there are prev pages, previous link will be active-->
+                <a href="{{ $gemstones->previousPageUrl() }}" rel="prev">{{ __('Previous') }}</a></li>
+            @endif
+        
+-	In this instance, it determines whether the present collection of data (gemstones) spans multiple pages.
+-	*@if ($gemstones->hasPages())* this condition checks if there are multiple pages of data available for gemstones. The *hasPage()* method will return true if more than three gemstones per page. 
+- In Laravel paginator, the *onFirstPage()* method checks if the user is on the first page.
+- *{{ __('Previous') }}* When the user is on the first page this will display the *Previous* text with a *disabled* class, which typically sets the link inactive and hinders any action.
+- The __() function in Laravel allows to support multiple languages in applications. This feature is useful for displaying specific content in different language based on user preference.
+-	*$gemstones->previousPageUrl()* this will return the correct URL if the user is not on the first page, the link is active to go back to the previous page. 
+-	*rel=”prev”* this HTTML attribute defines a relationship to the previous page.
+
+        <!-- Next Page Link -->
+        @if ($gemstones->hasMorePages())
+            <!-- Active Next link if there are more pages. -->
+            <a href="{{ $gemstones->nextPageUrl() }}" rel="next">{{ __('Next') }}</a></li>
+        @else
+            <!-- If the user is on the last page Next is disabled -->
+            <a class="disabled"><span>{{ __('Next') }}</span></a>
+        @endif
+
+-	The same applies to the Next page link. *hasMorePages(*) method checks if there are more pages, if there it is, the Next link is clickable.
+-	 *@else* is disabling the Next link if there are no more pages.
+
+Displaying the current page number and the total page number:
+    
+    {{ "Page " . $gemstones->currentPage() . "  of  " . $gemstones->lastPage() }}
+
+-	*$gemstones->currentPage()*  the current page number is returned. 
+-	*$gemstones->lastPage()* the total page number is returned. 
+
+## Validation for Data Storing
+
+It is a good practice to add validation when the user tries to input some data. 
+To do this we need to import the *Validator Facade* in the *GemstoneController*:
+
+    use Illuminate\Support\Facades\Validator
+
+This will provide methods to validate data against predeterminate rules.
+
+    function store(Request $request) 
+        {   
+            $rules=[
+                'name' => 'required|string|max:100|regex:/^([a-zA-Z]+)(\s[a-zA-Z]+)*$/',
+                'location' => 'required|string|max:100|regex:/^([a-zA-Z,]+)(\s[a-zA-Z,]+)*$/',
+                'colour'  => 'required|string|max:100|regex:/^([a-zA-Z]+)(\s[a-zA-Z]+)*$/',
+                'association' => 'required|string|max:100|regex:/^([a-zA-Z]+)(\s[a-zA-Z]+)*$/',
+                'meaning' => 'required|string|max:100|regex:/^([a-zA-Z]+)(\s[a-zA-Z]+)*$/',
+
+            ];
+        }
+
+-	*$rules* variable has an array containing validations rules for each field. 
+-	The *required* is used to ensure that the field is not empty. 
+-	To state that the value must be a string we use the string rule. 
+-	*max:100* this limits the length of the input field. 
+-	*regex:/^([a-zA-Z]+)(\s[a-zA-Z]+)*$/* this imposes specific character and spaces rules. 
+
+Next, we add message errors. To define customised error messages, we create an array for *$messages*.
+This approach is useful for reusing validation rules in different parts of the application.
+
+    $messages = [
+                'name.required' => 'The name is required.',
+                'location.required' => 'Please enter a location.',
+                'colour.required' => 'A colour is required.',
+                'association.required' => 'Please enter an association.',
+                'meaning.required' => 'A meaning is required.',
+            ];
+
+For example, the *location.required* key donate the field location and the corresponding rule required to which the custom message must be applied. 
+
+## Validation Error Handlining 
+
+For error handling, we need to update the *create.blade.php*.
+    
+    <div>
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" value="{{ old('location')}}"/>
+    </div>
+    @error ('location') <!-- Checking validation error for location field -->
+        <div class="error-message">{{$message}}</div>
+    @enderror
+
+-	*value="{{ old('location')}}*  it is a global old helper provided by Laravel to repopulate the form. It retains the previous input if the validation fails. 
+-	To check if there is a validation error associated with the filed location, we use the directive *@error*.
+-	If validation fails, *{{message}}* will output the associated error message for this field.
 
 ## Elequent Relantionships 
 
