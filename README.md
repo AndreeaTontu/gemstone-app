@@ -30,61 +30,6 @@ The file was created in the components directory, and we called it nav-bar.blade
 
 *When creating component, we make the code more organised, making it easier to add, update or remove code without affecting the rest of the application. It also reduces code duplication by following DRY principle.*
 
-## Pagination
-
-Pagination helps users to browse the gemstones with ease.
-To create pagination, we need to add this pagination when we call the Gemstone class in the *index()* method. Something like this:
-
-    function index()
-    {
-        $gemstones = Gemstone::paginate(3); //Items per pagination
-        return view('gemstones.index',['gemstones' => $gemstones]);
-    }
-
--	Instead of fetching all gemstones, we only fetch three gemstones per pagination. In Laravel, the *paginate()* method is an appropriate way to control pagination. 
--	Based on the total number of gemstones and the chosen number of gemstones per page, it automatically determines the total number of pages. 
--	The *gemstones.index* view will display the gemstones and the pagination controls after the paginated *$gemstones* are passed to it. 
--	The pagination makes a cleaner user interface. 
-
-Next, we must render the pagination links for the gemstones. We do this in the *index.blade.php* using the *@if* directive to perform conditional checks. 
-
-    @if ($gemstones->hasPages())
-        <div class="pagination">
-            <!-- Previous Page Link -->
-            @if ($gemstones->onFirstPage())
-                <a class="disabled"><span>{{ __('Previous') }}</span></a>
-            @else
-                <!-- If there are prev pages, previous link will be active-->
-                <a href="{{ $gemstones->previousPageUrl() }}" rel="prev">{{ __('Previous') }}</a></li>
-            @endif
-        
--	In this instance, it determines whether the present collection of data (gemstones) spans multiple pages.
--	*@if ($gemstones->hasPages())* this condition checks if there are multiple pages of data available for gemstones. The *hasPage()* method will return true if more than three gemstones per page. 
-- In Laravel paginator, the *onFirstPage()* method checks if the user is on the first page.
-- *{{ __('Previous') }}* When the user is on the first page this will display the *Previous* text with a *disabled* class, which typically sets the link inactive and hinders any action.
-- The __() function in Laravel allows to support multiple languages in applications. This feature is useful for displaying specific content in different language based on user preference.
--	*$gemstones->previousPageUrl()* this will return the correct URL if the user is not on the first page, the link is active to go back to the previous page. 
--	*rel=”prev”* this HTTML attribute defines a relationship to the previous page.
-
-        <!-- Next Page Link -->
-        @if ($gemstones->hasMorePages())
-            <!-- Active Next link if there are more pages. -->
-            <a href="{{ $gemstones->nextPageUrl() }}" rel="next">{{ __('Next') }}</a></li>
-        @else
-            <!-- If the user is on the last page Next is disabled -->
-            <a class="disabled"><span>{{ __('Next') }}</span></a>
-        @endif
-
--	The same applies to the Next page link. *hasMorePages(*) method checks if there are more pages, if there it is, the Next link is clickable.
--	 *@else* is disabling the Next link if there are no more pages.
-
-Displaying the current page number and the total page number:
-    
-    {{ "Page " . $gemstones->currentPage() . "  of  " . $gemstones->lastPage() }}
-
--	*$gemstones->currentPage()*  the current page number is returned. 
--	*$gemstones->lastPage()* the total page number is returned. 
-
 ## Validation for Data Storing
 
 It is a good practice to add validation when the user tries to input some data. 
