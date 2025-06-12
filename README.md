@@ -3,10 +3,27 @@
 The Gemstone App is a web-based app that aims to be a user-friendly platform for enthusiast users to discover and manage gemstones, also known as meaningful stones. Users can explore various gemstone collections, study details about each one, such as name, colour, location, meaning and association, and add new gemstones to the database. Additionally, users may add their favourite gemstones to the database, guaranteeing a personal and large gemstone collection.
 The app will include basic CRUD functionality, allowing users to Create, Read, Update and Delete gemstone data. 
 
-# UI Preview
+## UI Preview
+
+## Guest Users Home Page 
 
 ![screencapture-gemstone-app-test-gemstones-2025-06-11-21_38_20](https://github.com/user-attachments/assets/459979b6-1436-47a7-9a03-cf919bf4353c) 
 
+## Logged in User Home Page
+
+![screencapture-gemstone-app-test-gemstones-2025-06-11-21_37_50](https://github.com/user-attachments/assets/a4939049-c938-450c-99cd-e62a7a578231)
+
+## Gemstone Info Page + Update
+
+![screencapture-gemstone-app-test-gemstones-2-2025-06-11-21_40_09](https://github.com/user-attachments/assets/fd63b4ac-ced8-4c37-a703-6f06c4ebba33)
+
+## Gemstone Grades Page
+
+![screencapture-gemstone-app-test-grades-2025-06-11-21_38_58](https://github.com/user-attachments/assets/29b46f11-b56d-4549-a738-d053ebaa579a)
+
+## Add New Records Page
+
+![screencapture-gemstone-app-test-gemstones-create-2025-06-12-16_49_56](https://github.com/user-attachments/assets/7fd54f8a-a9d8-4af7-9890-d954cb01f750)
 
 ## Demonstration
 
